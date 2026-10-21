@@ -1,0 +1,20 @@
+export const initial = {
+ brand:{name:'The Singles Forum',tagline:'…equipping our future',logo:'/logo.jpg',phone:'09024285534'},
+ hero:{title:'Find your people.',accent:'Discover your purpose.',description:'A Christ-centred community for faith, friendship and purposeful living.',image:'/hero.webp',button:'Find your place',eyebrow:'Rooted in Christ. Growing together.'},
+ steps:[{title:'Visit a gathering',description:'Meet people, experience community, belong.',link:'#gatherings'},{title:'Grow with us',description:'Deepen your faith, build godly friendships.',link:'#programmes'},{title:'Make a difference',description:'Use your gifts, serve and impact lives.',link:'#get-involved'}],
+ about:{eyebrow:'About us',title:'A place to belong.\nA future to build.',description:'The Singles Forum is a non-denominational Christian organisation equipping young adults through discipleship and purposeful living.',image:'/bible.webp',portrait:'/study.webp',speaker:'/speaker.webp',vision:'Singles living by God’s standards, serving purpose and fulfilling destiny.',mission:'To raise responsible and godly singles through biblical principles for purposeful living.'},
+ programmes:{eyebrow:'Grow in every season',title:'Faith for life. Tools for the future.',items:[{title:'Faith & worship',image:'/prayer.webp',description:'Deepen your relationship with Christ through discipleship, prayer, worship and biblical teaching.'},{title:'Leadership & purpose',image:'/speaker.webp',description:'Discover your gifts through mentorship, leadership development and our Purpose Clinic.'},{title:'Skills & empowerment',image:'/skills.webp',description:'Build practical capacity through skill workshops, mentorship and opportunities to serve.'}]},
+ activities:{eyebrow:'Faith in action',title:'Our activities',items:[{title:'Street Storm'},{title:'Hospital Visit'},{title:'Prison Visit'},{title:'Picnic'},{title:'Orphanage Visit'},{title:'School Mission'},{title:'Church Visit'},{title:'IIBB Quiz Competition'},{title:'Skill Acquisition'}]},
+ gatherings:{eyebrow:'Our gatherings',title:'There’s a seat for you.',venue:'Jubilee Conference Centre, Effurun',address:'Enerhen Road, off Okorodudu Junction, Effurun, Delta State.',button:'Ask about our next gathering',image:'/worship.webp'},
+ invitation:{title:'Your next chapter\nstarts here.',button:'Let’s connect'},
+ community:{title:'Find your place at TSF',description:'Join a gathering, ask about mentorship or volunteer with our community. We would love to hear from you.',areas:'Prayer, music, drama, media, equipment, mission and ushering.'},
+ settings:{description:'The Singles Forum is a Christian community in Effurun helping young adults grow in faith, friendship and purpose.',illustrativeImages:true}
+};
+export const escape = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export function validate(value, template=initial, path='content'){
+ if(Array.isArray(template)){if(!Array.isArray(value)||value.length!==template.length)throw Error(`${path}: keep ${template.length} entries`);value.forEach((v,i)=>validate(v,template[i],`${path}.${i}`));}
+ else if(template && typeof template==='object'){if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).sort().join()!==Object.keys(template).sort().join())throw Error(`${path}: invalid fields`);for(const k of Object.keys(template))validate(value[k],template[k],`${path}.${k}`);}
+ else if(typeof template==='boolean'){if(typeof value!=='boolean')throw Error(`${path}: expected checkbox`);}
+ else {if(typeof value!=='string'||!value.trim()||value.length>3000)throw Error(`${path}: enter 1–3000 characters`);if(/\.(image|portrait|speaker|logo)$/.test(path)&&!(/^\/[a-zA-Z0-9/_.-]+$/.test(value)||/^https:\/\//.test(value)))throw Error(`${path}: use a local image path or HTTPS URL`);if(path.endsWith('.link')&&!/^#[a-z-]+$/.test(value))throw Error('Step link must be a page section');if(path.endsWith('.phone')&&!/^\+?[0-9 ]{8,18}$/.test(value))throw Error('Invalid phone number');}
+ return value;
+}
