@@ -3,8 +3,17 @@ function response(body,status=200,type='application/json',extra={}){return new R
 const groupLinksUpdate='growth-links-2026-10-22';
 async function state(env){
  const object=await env.BUCKET.get('cms/current.json');
- if(!object)return {data:{revision:0,contentUpdates:[groupLinksUpdate],draft:structuredClone(initial),published:structuredClone(initial)},etag:null};
+ if(!object)return {data:{revision:0,contentUpdates:[groupLinksUpdate,'director-2026-10-22'],draft:structuredClone(initial),published:structuredClone(initial)},etag:null};
  const data=await object.json();
+ if(!(data.contentUpdates||[]).includes('director-2026-10-22')){
+  await env.BUCKET.put('cms/history/'+data.revision+'-'+crypto.randomUUID()+'.json',JSON.stringify(data));
+  for(const content of [data.draft,data.published])if(!content.director)content.director=structuredClone(initial.director);
+  data.contentUpdates=[...(data.contentUpdates||[]),'director-2026-10-22'];data.revision++;
+  const saved=await env.BUCKET.put('cms/current.json',JSON.stringify(data),{onlyIf:{etagMatches:object.etag}});
+  if(!saved)return state(env);
+  return state(env);
+ }
+
  if(!(data.contentUpdates||[]).includes(groupLinksUpdate)){
   await env.BUCKET.put('cms/history/'+data.revision+'-'+crypto.randomUUID()+'.json',JSON.stringify(data));
   for(const content of [data.draft,data.published])for(const group of content.growthGroups.items){const supplied=initial.growthGroups.items.find(item=>item.title===group.title);if(['Purpose Group','Service Leadership Group','Partnership Group'].includes(group.title)&&!group.whatsappUrl)group.whatsappUrl=supplied.whatsappUrl;}
