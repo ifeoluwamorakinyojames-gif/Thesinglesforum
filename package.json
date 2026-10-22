@@ -13,7 +13,7 @@
     "test": "node --test tests/site.test.mjs",
     "password": "node scripts/password.mjs",
     "build:worker": "node scripts/build-hosted.mjs",
-    "test:worker": "node scripts/test-hosted.mjs && node --test tests/standalone.test.mjs",
+    "test:worker": "node scripts/test-hosted.mjs && node --test tests/standalone.test.mjs && node --test tests/d1.test.mjs",
     "password:worker": "node scripts/worker-password.mjs",
     "deploy:worker": "npm run build:worker && wrangler deploy",
     "preview:worker": "npm run build:worker && wrangler dev"

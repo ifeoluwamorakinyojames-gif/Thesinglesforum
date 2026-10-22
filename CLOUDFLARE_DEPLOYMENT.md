@@ -1,3 +1,22 @@
+# Free deployment: D1 replaces R2
+
+Use Workers Free and a D1 database named `tsf-content`. **Do not activate R2 or use the R2 instructions below for this deployment.** D1 Free currently allows 500 MB per database. Photos remain limited to 3 MB each and are split into smaller database rows. This is suitable for a modest photo collection, not unlimited photo hosting. Daily Worker and database limits still apply; reaching free limits can interrupt service. Stay on Workers Free to avoid paid-plan overages.
+
+1. In Cloudflare, Storage & databases → D1 SQL Database → Create database. Name it `tsf-content`. Copy the database UUID (not a password) and replace `REPLACE_WITH_YOUR_D1_DATABASE_ID` in `wrangler.jsonc`. Never deploy with that placeholder.
+2. Run `migrations/0001_storage.sql` in the database Console, or `npx wrangler d1 migrations apply tsf-content --remote` after configuring the UUID. This creates the two storage tables. No R2 binding is needed.
+3. Connect the Worker to GitHub branch `feat/tsf-mockup-website`. Project name `the-singles-forum`, build `npm run build:worker`, deploy `npx wrangler deploy`, root `/`.
+4. Set encrypted **runtime** secrets `ADMIN_PASSWORD_HASH` and `SESSION_SECRET`, using `npm run password:worker` privately. Do not place the plain password in build variables or GitHub.
+5. Import the backed-up content and uploaded photos into D1 before connecting the domain. Generate a private import with `node scripts/prepare-d1-import.mjs --directory <backup> --output <private-file.sql>`, then run `npx wrangler d1 execute tsf-content --remote --file <private-file.sql>` only against the new empty database. The generated SQL refuses an existing content database. Keep this file out of GitHub. The previous R2 importer below is not compatible with D1. Keep the original Site available until migration is verified.
+6. Verify `/api/health`, `/admin`, login/logout, publish, image upload, banner and topic slides on the workers.dev URL. Then connect `thesinglesforum.com` as the Worker custom domain, preserving mail DNS.
+
+The D1 adapter uses transactional compare-and-swap writes to preserve draft conflict checks and login throttling. The existing Sites runtime can still use its original R2 binding unchanged. Backups and secrets must remain outside GitHub.
+
+Reference: https://developers.cloudflare.com/d1/platform/pricing/ and https://developers.cloudflare.com/d1/platform/limits/.
+
+---
+
+## Archived R2 deployment instructions (alternative only; requires R2 activation)
+
 # TSF deployment to the owner's Cloudflare account
 
 This branch contains a standalone Cloudflare Worker and an R2 storage binding. It preserves the existing public site, image uploads, draft publishing, content history, activities, banner slides and YouTube topic slideshow. The existing ChatGPT Sites deployment stays available during migration.

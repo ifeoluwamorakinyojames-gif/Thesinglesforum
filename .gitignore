@@ -10,3 +10,5 @@ dist/
 .dev.vars.*
 backups/
 migration-data/
+
+*private-import*.sql
