@@ -12,7 +12,7 @@ export const initial = {
  director:{name:'Ify Chinua',role:'Director',image:''},
  community:{title:'Find your place at TSF',description:'Join a gathering, ask about mentorship or volunteer with our community. We would love to hear from you.',areas:'Prayer, music, drama, media, equipment, mission and ushering.'},
  customSections:[],
- settings:{youtubeUrl:'https://youtube.com/@thesinglesforum3047',whatsappNumber:'2349024285534',description:'The Singles Forum is a Christian community in Effurun helping young adults grow in faith, friendship and purpose.',illustrativeImages:true}
+ settings:{showYoutubeVideos:true,youtubePlaylistId:'UUu9OBSoXEsfUhyDPNoX_0AQ',youtubeUrl:'https://youtube.com/@thesinglesforum3047',whatsappNumber:'2349024285534',description:'The Singles Forum is a Christian community in Effurun helping young adults grow in faith, friendship and purpose.',illustrativeImages:true}
 };
 export const escape = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function validate(value, template=initial, path='content'){
@@ -26,6 +26,7 @@ export function validate(value, template=initial, path='content'){
  else if(typeof template==='boolean'){if(typeof value!=='boolean')throw Error(`${path}: expected checkbox`);}
  else if(path.startsWith('content.customSection.')&&['text','image','imageAlt','buttonLabel','buttonUrl'].includes(path.split('.').pop())&&value===''){}
  else if(path.endsWith('.buttonUrl')){if(typeof value!=='string'||value.length>1000||!(/^(?:#[a-z0-9-]+|\/(?!\/)[a-zA-Z0-9/_#?.=&%-]*|https:\/\/[^\s]+)$/.test(value)))throw Error('Use an HTTPS link or a page section');}
+ else if(path==='content.settings.youtubePlaylistId'){if(typeof value!=='string'||!/^(?:PL|UU)[A-Za-z0-9_-]{10,64}$/.test(value))throw Error('Enter a valid YouTube playlist ID');}
  else if(path==='content.settings.youtubeUrl'){let url;try{url=new URL(value);}catch{throw Error('Enter a YouTube channel URL');}if(url.protocol!=='https:'||!['youtube.com','www.youtube.com'].includes(url.hostname)||url.username||url.password||url.port)throw Error('Enter a YouTube HTTPS URL');}
  else if(path==='content.settings.whatsappNumber'){if(typeof value!=='string'||!/^\d{10,15}$/.test(value))throw Error('WhatsApp number must include country code, without + or spaces');}
  else if(/^content\.activities\.items\.\d+\.(image|imageAlt)$/.test(path)&&value===''){}
@@ -35,4 +36,4 @@ export function validate(value, template=initial, path='content'){
  return value;
 }
 
-export function upgradeContent(c){if(!c.settings.youtubeUrl)c.settings.youtubeUrl=initial.settings.youtubeUrl;for(const activity of c.activities.items){if(activity.showOnBanner===undefined)activity.showOnBanner=false;if(activity.image===undefined)activity.image='';if(activity.imageAlt===undefined)activity.imageAlt='';}if(!c.bannerSlides)c.bannerSlides=structuredClone(initial.bannerSlides);if(!c.director)c.director=structuredClone(initial.director);if(!c.customSections)c.customSections=[];if(!c.settings.whatsappNumber)c.settings.whatsappNumber=initial.settings.whatsappNumber;return c;}
+export function upgradeContent(c){if(c.settings.showYoutubeVideos===undefined)c.settings.showYoutubeVideos=true;if(!c.settings.youtubePlaylistId)c.settings.youtubePlaylistId=initial.settings.youtubePlaylistId;if(!c.settings.youtubeUrl)c.settings.youtubeUrl=initial.settings.youtubeUrl;for(const activity of c.activities.items){if(activity.showOnBanner===undefined)activity.showOnBanner=false;if(activity.image===undefined)activity.image='';if(activity.imageAlt===undefined)activity.imageAlt='';}if(!c.bannerSlides)c.bannerSlides=structuredClone(initial.bannerSlides);if(!c.director)c.director=structuredClone(initial.director);if(!c.customSections)c.customSections=[];if(!c.settings.whatsappNumber)c.settings.whatsappNumber=initial.settings.whatsappNumber;return c;}
