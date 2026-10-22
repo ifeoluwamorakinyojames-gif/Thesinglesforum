@@ -40,3 +40,5 @@
 @media(max-width:1024px){.hero{min-height:calc(100vh - 85px);min-height:calc(100svh - 85px)}}
 @media(max-width:650px){.hero{align-items:flex-end}.hero .hero-content{width:calc(100% - 32px);padding:160px 0 28px}.hero .hero-shade{background:linear-gradient(0deg,#031e3bfa 0%,#031e3bc9 38%,#031e3b22 85%)}.hero h1{font-size:clamp(30px,8vw,44px)}.hero p{font-size:17px;max-width:100%}.hero .banner-dots{flex-basis:100%;order:4}.hero .hero-eyebrow{font-size:10px}}
 @media(max-height:500px) and (orientation:landscape){.hero .hero-content{padding-block:24px}.hero h1{font-size:clamp(28px,4vw,44px)}.hero p{margin-top:12px}.hero .hero-eyebrow,.hero .banner-controls{margin-top:16px}}
+
+.youtube-link{display:inline-flex;align-items:center;gap:8px;min-height:44px}.youtube-link svg{flex-shrink:0}
