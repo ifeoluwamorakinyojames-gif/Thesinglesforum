@@ -4,6 +4,6 @@
   "main": "dist/server/index.js",
   "compatibility_date": "2026-10-22",
   "workers_dev": true,
-  "d1_databases": [{ "binding": "DB", "database_name": "tsf-content", "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID" }],
+  "d1_databases": [{ "binding": "DB", "database_name": "tsf-content", "database_id": "eb17717b-55ae-4959-8158-9f4fffa364bb" }],
   "vars": { "AUTH_MODE": "standalone" }
 }
