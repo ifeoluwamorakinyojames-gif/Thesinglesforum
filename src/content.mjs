@@ -10,15 +10,25 @@ export const initial = {
  invitation:{title:'Your next chapter\nstarts here.',button:'Let’s connect'},
  director:{name:'Ify Chinua',role:'Director',image:''},
  community:{title:'Find your place at TSF',description:'Join a gathering, ask about mentorship or volunteer with our community. We would love to hear from you.',areas:'Prayer, music, drama, media, equipment, mission and ushering.'},
- settings:{description:'The Singles Forum is a Christian community in Effurun helping young adults grow in faith, friendship and purpose.',illustrativeImages:true}
+ customSections:[],
+ settings:{whatsappNumber:'2349024285534',description:'The Singles Forum is a Christian community in Effurun helping young adults grow in faith, friendship and purpose.',illustrativeImages:true}
 };
 export const escape = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function validate(value, template=initial, path='content'){
- if(Array.isArray(template)){if(!Array.isArray(value)||value.length!==template.length)throw Error(`${path}: keep ${template.length} entries`);value.forEach((v,i)=>validate(v,template[i],`${path}.${i}`));}
+ if(path==='content.customSections'){
+  if(!Array.isArray(value)||value.length>20)throw Error('Use up to 20 custom sections');
+  const ids=new Set();for(const section of value){validate(section,{id:'section',title:'Title',text:'',image:'',imageAlt:'',buttonLabel:'',buttonUrl:'',visible:true,theme:'cream'},'content.customSection');if(!/^[a-z0-9-]{1,70}$/.test(section.id)||ids.has(section.id))throw Error('Section IDs must be unique');ids.add(section.id);if(!['cream','navy','orange'].includes(section.theme))throw Error('Invalid section colour');}
+ }
+ else if(Array.isArray(template)){if(!Array.isArray(value)||value.length!==template.length)throw Error(`${path}: keep ${template.length} entries`);value.forEach((v,i)=>validate(v,template[i],`${path}.${i}`));}
  else if(template && typeof template==='object'){if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).sort().join()!==Object.keys(template).sort().join())throw Error(`${path}: invalid fields`);for(const k of Object.keys(template))validate(value[k],template[k],`${path}.${k}`);}
  else if(typeof template==='boolean'){if(typeof value!=='boolean')throw Error(`${path}: expected checkbox`);}
+ else if(path.startsWith('content.customSection.')&&['text','image','imageAlt','buttonLabel','buttonUrl'].includes(path.split('.').pop())&&value===''){}
+ else if(path.endsWith('.buttonUrl')){if(typeof value!=='string'||value.length>1000||!(/^(?:#[a-z0-9-]+|\/(?!\/)[a-zA-Z0-9/_#?.=&%-]*|https:\/\/[^\s]+)$/.test(value)))throw Error('Use an HTTPS link or a page section');}
+ else if(path==='content.settings.whatsappNumber'){if(typeof value!=='string'||!/^\d{10,15}$/.test(value))throw Error('WhatsApp number must include country code, without + or spaces');}
  else if(path==='content.director.image'&&value===''){}
  else if(path.endsWith('.whatsappUrl')){if(typeof value!=='string'||value.length>500)throw Error('Invalid WhatsApp group link');if(value){let url;try{url=new URL(value);}catch{throw Error('Invalid WhatsApp group link');}if(url.protocol!=='https:'||url.hostname!=='chat.whatsapp.com'||url.port||url.username||url.password||!/^\/[A-Za-z0-9]+$/.test(url.pathname))throw Error('Use a WhatsApp group invite link');}}
  else {if(typeof value!=='string'||!value.trim()||value.length>3000)throw Error(`${path}: enter 1–3000 characters`);if(/\.(image|portrait|speaker|logo)$/.test(path)&&!(/^\/[a-zA-Z0-9/_.-]+$/.test(value)||/^https:\/\//.test(value)))throw Error(`${path}: use a local image path or HTTPS URL`);if(path.endsWith('.link')&&!/^#[a-z-]+$/.test(value))throw Error('Step link must be a page section');if(path.endsWith('.phone')&&!/^\+?[0-9 ]{8,18}$/.test(value))throw Error('Invalid phone number');}
  return value;
 }
+
+export function upgradeContent(c){if(!c.director)c.director=structuredClone(initial.director);if(!c.customSections)c.customSections=[];if(!c.settings.whatsappNumber)c.settings.whatsappNumber=initial.settings.whatsappNumber;return c;}
