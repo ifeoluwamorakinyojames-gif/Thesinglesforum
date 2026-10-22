@@ -1,6 +1,7 @@
 export const initial = {
  brand:{name:'The Singles Forum',tagline:'…equipping our future',logo:'/logo.jpg',phone:'09024285534'},
  hero:{title:'Find your people.',accent:'Discover your purpose.',description:'A Christ-centred community for faith, friendship and purposeful living.',image:'/hero.webp',button:'Find your place',eyebrow:'Rooted in Christ. Growing together.'},
+ bannerSlides:[{image:'/hero.webp',imageAlt:'Illustrative TSF community scene'},{image:'/worship.webp',imageAlt:'Illustrative Christian worship gathering'},{image:'/skills.webp',imageAlt:'Illustrative skills and empowerment activity'}],
  steps:[{title:'Visit a gathering',description:'Meet people, experience community, belong.',link:'#gatherings'},{title:'Grow with us',description:'Deepen your faith, build godly friendships.',link:'#programmes'},{title:'Make a difference',description:'Use your gifts, serve and impact lives.',link:'#get-involved'}],
  about:{eyebrow:'About us',title:'A place to belong.\nA future to build.',description:'The Singles Forum is a non-denominational Christian organisation equipping young adults through discipleship and purposeful living.',image:'/bible.webp',portrait:'/study.webp',speaker:'/speaker.webp',vision:'Singles living by God’s standards, serving purpose and fulfilling destiny.',mission:'To raise responsible and godly singles through biblical principles for purposeful living.'},
  programmes:{eyebrow:'Grow in every season',title:'Faith for life. Tools for the future.',items:[{title:'Faith & worship',image:'/prayer.webp',description:'Deepen your relationship with Christ through discipleship, prayer, worship and biblical teaching.'},{title:'Leadership & purpose',image:'/speaker.webp',description:'Discover your gifts through mentorship, leadership development and our Purpose Clinic.'},{title:'Skills & empowerment',image:'/skills.webp',description:'Build practical capacity through skill workshops, mentorship and opportunities to serve.'}]},
@@ -15,7 +16,8 @@ export const initial = {
 };
 export const escape = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function validate(value, template=initial, path='content'){
- if(path==='content.customSections'){
+ if(path==='content.bannerSlides'){if(!Array.isArray(value)||value.length>10)throw Error('Use up to 10 banner slides');for(const slide of value)validate(slide,{image:'/hero.webp',imageAlt:'Activity photograph'},'content.bannerSlide');}
+ else if(path==='content.customSections'){
   if(!Array.isArray(value)||value.length>20)throw Error('Use up to 20 custom sections');
   const ids=new Set();for(const section of value){validate(section,{id:'section',title:'Title',text:'',image:'',imageAlt:'',buttonLabel:'',buttonUrl:'',visible:true,theme:'cream'},'content.customSection');if(!/^[a-z0-9-]{1,70}$/.test(section.id)||ids.has(section.id))throw Error('Section IDs must be unique');ids.add(section.id);if(!['cream','navy','orange'].includes(section.theme))throw Error('Invalid section colour');}
  }
@@ -31,4 +33,4 @@ export function validate(value, template=initial, path='content'){
  return value;
 }
 
-export function upgradeContent(c){if(!c.director)c.director=structuredClone(initial.director);if(!c.customSections)c.customSections=[];if(!c.settings.whatsappNumber)c.settings.whatsappNumber=initial.settings.whatsappNumber;return c;}
+export function upgradeContent(c){if(!c.bannerSlides)c.bannerSlides=structuredClone(initial.bannerSlides);if(!c.director)c.director=structuredClone(initial.director);if(!c.customSections)c.customSections=[];if(!c.settings.whatsappNumber)c.settings.whatsappNumber=initial.settings.whatsappNumber;return c;}
