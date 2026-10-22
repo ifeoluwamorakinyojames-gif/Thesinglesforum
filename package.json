@@ -10,7 +10,7 @@
     "dev": "node --env-file-if-exists=.env src/server.mjs",
     "start": "node --env-file-if-exists=.env src/server.mjs",
     "build": "node scripts/build.mjs",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test tests/site.test.mjs",
     "password": "node scripts/password.mjs",
     "build:worker": "node scripts/build-hosted.mjs",
     "test:worker": "node scripts/test-hosted.mjs && node --test tests/standalone.test.mjs",
