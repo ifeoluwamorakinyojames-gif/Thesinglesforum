@@ -8,6 +8,7 @@ export const initial = {
  activities:{eyebrow:'Faith in action',title:'Our activities',items:[{title:'Street Storm'},{title:'Hospital Visit'},{title:'Prison Visit'},{title:'Picnic'},{title:'Orphanage Visit'},{title:'School Mission'},{title:'Church Visit'},{title:'IIBB Quiz Competition'},{title:'Skill Acquisition'}]},
  gatherings:{eyebrow:'Our gatherings',title:'There’s a seat for you.',venue:'Jubilee Conference Centre, Effurun',address:'Enerhen Road, off Okorodudu Junction, Effurun, Delta State.',button:'Ask about our next gathering',image:'/worship.webp'},
  invitation:{title:'Your next chapter\nstarts here.',button:'Let’s connect'},
+ director:{name:'Ify Chinua',role:'Director',image:''},
  community:{title:'Find your place at TSF',description:'Join a gathering, ask about mentorship or volunteer with our community. We would love to hear from you.',areas:'Prayer, music, drama, media, equipment, mission and ushering.'},
  settings:{description:'The Singles Forum is a Christian community in Effurun helping young adults grow in faith, friendship and purpose.',illustrativeImages:true}
 };
@@ -16,6 +17,7 @@ export function validate(value, template=initial, path='content'){
  if(Array.isArray(template)){if(!Array.isArray(value)||value.length!==template.length)throw Error(`${path}: keep ${template.length} entries`);value.forEach((v,i)=>validate(v,template[i],`${path}.${i}`));}
  else if(template && typeof template==='object'){if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).sort().join()!==Object.keys(template).sort().join())throw Error(`${path}: invalid fields`);for(const k of Object.keys(template))validate(value[k],template[k],`${path}.${k}`);}
  else if(typeof template==='boolean'){if(typeof value!=='boolean')throw Error(`${path}: expected checkbox`);}
+ else if(path==='content.director.image'&&value===''){}
  else if(path.endsWith('.whatsappUrl')){if(typeof value!=='string'||value.length>500)throw Error('Invalid WhatsApp group link');if(value){let url;try{url=new URL(value);}catch{throw Error('Invalid WhatsApp group link');}if(url.protocol!=='https:'||url.hostname!=='chat.whatsapp.com'||url.port||url.username||url.password||!/^\/[A-Za-z0-9]+$/.test(url.pathname))throw Error('Use a WhatsApp group invite link');}}
  else {if(typeof value!=='string'||!value.trim()||value.length>3000)throw Error(`${path}: enter 1–3000 characters`);if(/\.(image|portrait|speaker|logo)$/.test(path)&&!(/^\/[a-zA-Z0-9/_.-]+$/.test(value)||/^https:\/\//.test(value)))throw Error(`${path}: use a local image path or HTTPS URL`);if(path.endsWith('.link')&&!/^#[a-z-]+$/.test(value))throw Error('Step link must be a page section');if(path.endsWith('.phone')&&!/^\+?[0-9 ]{8,18}$/.test(value))throw Error('Invalid phone number');}
  return value;
