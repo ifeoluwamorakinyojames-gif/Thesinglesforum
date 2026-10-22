@@ -1,0 +1,14 @@
+node_modules/
+data/
+dist/
+.env
+.env.*
+!.env.example
+
+.wrangler/
+.dev.vars
+.dev.vars.*
+backups/
+migration-data/
+
+*private-import*.sql
