@@ -1,5 +1,6 @@
 import {readFile,writeFile,mkdir,readdir,rm} from 'node:fs/promises';
 const assets={};for(const name of (await readdir('public')).sort()){const data=await readFile('public/'+name);assets['/'+name]=data.toString('base64');}
+Object.assign(assets,JSON.parse(await readFile('worker/favicon-assets.json','utf8')));
 assets['/admin.js']=(await readFile('worker/admin.js')).toString('base64');
 const content=(await readFile('src/content.mjs','utf8')).replaceAll('export ','');
 const render=(await readFile('src/render.mjs','utf8')).replace("import {escape as e} from './content.mjs';","const e=escape;").replaceAll('export ','');
