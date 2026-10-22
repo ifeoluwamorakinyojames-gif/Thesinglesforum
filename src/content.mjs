@@ -16,7 +16,7 @@ export const initial = {
 };
 export const escape = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function validate(value, template=initial, path='content'){
- if(path==='content.bannerSlides'){if(!Array.isArray(value)||value.length>10)throw Error('Use up to 10 banner slides');for(const slide of value)validate(slide,{image:'/hero.webp',imageAlt:'Activity photograph'},'content.bannerSlide');}
+ if(path==='content.bannerSlides'){if(!Array.isArray(value)||value.length>100)throw Error('Use up to 100 banner slides');for(const slide of value)validate(slide,{image:'/hero.webp',imageAlt:'Activity photograph'},'content.bannerSlide');}
  else if(path==='content.customSections'){
   if(!Array.isArray(value)||value.length>20)throw Error('Use up to 20 custom sections');
   const ids=new Set();for(const section of value){validate(section,{id:'section',title:'Title',text:'',image:'',imageAlt:'',buttonLabel:'',buttonUrl:'',visible:true,theme:'cream'},'content.customSection');if(!/^[a-z0-9-]{1,70}$/.test(section.id)||ids.has(section.id))throw Error('Section IDs must be unique');ids.add(section.id);if(!['cream','navy','orange'].includes(section.theme))throw Error('Invalid section colour');}
