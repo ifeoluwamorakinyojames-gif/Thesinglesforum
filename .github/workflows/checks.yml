@@ -13,3 +13,6 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+
+      - run: node scripts/build-hosted.mjs
+      - run: node scripts/test-hosted.mjs
