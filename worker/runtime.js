@@ -77,6 +77,7 @@ if(path.startsWith('/_migration/')){
  if(path==='/_migration/object'){const key=url.searchParams.get('key')||'';if(!allowedBackupKey(key))return response('Not found',404,'text/plain');const obj=await env.BUCKET.get(key);if(!obj)return response('Not found',404,'text/plain');if(request.headers.get('if-match')&&request.headers.get('if-match')!==obj.etag)return response({error:'Object changed during export; retry the backup.'},412);return new Response(obj.body,{headers:{'Content-Type':obj.httpMetadata?.contentType||'application/octet-stream','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','ETag':obj.etag}});}
  return response('Not found',404,'text/plain');
 }
+if(path==='/admin-password'&&['GET','HEAD'].includes(request.method))return response(request.method==='HEAD'?'':new TextDecoder().decode(Uint8Array.from(atob(assets['/password-tools.html']),c=>c.charCodeAt(0))),200,'text/html',{'X-Robots-Tag':'noindex, nofollow','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'"});
 if(standalone&&path==='/api/health')return response({ok:!!env.BUCKET,adminConfigured:!!env.ADMIN_PASSWORD_HASH&&env.SESSION_SECRET?.length>=32,contentImported:!!(await env.BUCKET.get('cms/current.json'))});
 if(standalone&&path==='/admin'&&request.method==='GET')return response(standaloneAdminPage(),200,'text/html',{'X-Robots-Tag':'noindex'});
 if(standalone&&path==='/api/admin/login'&&request.method==='POST'){
