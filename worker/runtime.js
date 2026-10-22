@@ -3,8 +3,15 @@ function response(body,status=200,type='application/json',extra={}){return new R
 const groupLinksUpdate='growth-links-2026-10-22';
 async function state(env){
  const object=await env.BUCKET.get('cms/current.json');
- if(!object)return {data:{revision:0,contentUpdates:[groupLinksUpdate,'director-2026-10-22','section-builder-v1'],draft:structuredClone(initial),published:structuredClone(initial)},etag:null};
+ if(!object)return {data:{revision:0,contentUpdates:[groupLinksUpdate,'director-2026-10-22','section-builder-v1','banner-slides-v1'],draft:structuredClone(initial),published:structuredClone(initial)},etag:null};
  const data=await object.json();
+ if(!(data.contentUpdates||[]).includes('banner-slides-v1')){
+  await env.BUCKET.put('cms/history/'+data.revision+'-'+crypto.randomUUID()+'.json',JSON.stringify(data));
+  for(const content of [data.draft,data.published])if(!content.bannerSlides){content.bannerSlides=structuredClone(initial.bannerSlides);content.bannerSlides[0].image=content.hero.image;}
+  data.contentUpdates=[...(data.contentUpdates||[]),'banner-slides-v1'];data.revision++;
+  const saved=await env.BUCKET.put('cms/current.json',JSON.stringify(data),{onlyIf:{etagMatches:object.etag}});if(!saved)return state(env);return state(env);
+ }
+
  if(!(data.contentUpdates||[]).includes('section-builder-v1')){
   await env.BUCKET.put('cms/history/'+data.revision+'-'+crypto.randomUUID()+'.json',JSON.stringify(data));
   upgradeContent(data.draft);upgradeContent(data.published);data.contentUpdates=[...(data.contentUpdates||[]),'section-builder-v1'];data.revision++;
