@@ -1,10 +1,17 @@
 const types={css:'text/css',js:'text/javascript',jpg:'image/jpeg',webp:'image/webp',png:'image/png',ico:'image/x-icon'};
-function response(body,status=200,type='application/json',extra={}){return new Response(typeof body==='object'?JSON.stringify(body):body,{status,headers:{'Content-Type':type+'; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'strict-origin-when-cross-origin','Content-Security-Policy':"default-src 'self'; img-src 'self' https:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'self'; form-action 'self'",...extra}});}
+function response(body,status=200,type='application/json',extra={}){return new Response(typeof body==='object'?JSON.stringify(body):body,{status,headers:{'Content-Type':type+'; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'strict-origin-when-cross-origin','Content-Security-Policy':"default-src 'self'; img-src 'self' https:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com; frame-ancestors 'self'; form-action 'self'",...extra}});}
 const groupLinksUpdate='growth-links-2026-10-22';
 async function state(env){
  const object=await env.BUCKET.get('cms/current.json');
- if(!object)return {data:{revision:0,contentUpdates:[groupLinksUpdate,'director-2026-10-22','section-builder-v1','banner-slides-v1','activity-images-v1','activity-banner-selection-v1','youtube-channel-v1'],draft:structuredClone(initial),published:structuredClone(initial)},etag:null};
+ if(!object)return {data:{revision:0,contentUpdates:[groupLinksUpdate,'director-2026-10-22','section-builder-v1','banner-slides-v1','activity-images-v1','activity-banner-selection-v1','youtube-channel-v1','youtube-showcase-v1'],draft:structuredClone(initial),published:structuredClone(initial)},etag:null};
  const data=await object.json();
+ if(!(data.contentUpdates||[]).includes('youtube-showcase-v1')){
+  await env.BUCKET.put('cms/history/'+data.revision+'-'+crypto.randomUUID()+'.json',JSON.stringify(data));
+  for(const content of [data.draft,data.published]){if(content.settings.showYoutubeVideos===undefined)content.settings.showYoutubeVideos=true;if(!content.settings.youtubePlaylistId)content.settings.youtubePlaylistId=initial.settings.youtubePlaylistId;}
+  data.contentUpdates=[...(data.contentUpdates||[]),'youtube-showcase-v1'];data.revision++;
+  const saved=await env.BUCKET.put('cms/current.json',JSON.stringify(data),{onlyIf:{etagMatches:object.etag}});if(!saved)return state(env);return state(env);
+ }
+
  if(!(data.contentUpdates||[]).includes('youtube-channel-v1')){
   await env.BUCKET.put('cms/history/'+data.revision+'-'+crypto.randomUUID()+'.json',JSON.stringify(data));
   for(const content of [data.draft,data.published])if(!content.settings.youtubeUrl)content.settings.youtubeUrl=initial.settings.youtubeUrl;
